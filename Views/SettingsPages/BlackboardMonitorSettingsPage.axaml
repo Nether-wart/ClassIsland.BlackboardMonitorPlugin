@@ -1,0 +1,170 @@
+<ci:SettingsPageBase
+    x:Class="ClassIsland.BlackboardMonitorPlugin.Views.SettingsPages.BlackboardMonitorSettingsPage"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ci="http://classisland.tech/schemas/xaml/core"
+    xmlns:models="clr-namespace:ClassIsland.BlackboardMonitorPlugin.Models">
+    <ScrollViewer>
+        <StackPanel Margin="0 0 0 24" Spacing="16">
+            <StackPanel Spacing="4">
+                <TextBlock FontSize="22" FontWeight="SemiBold" Text="黑板开合监视" />
+                <TextBlock Opacity="0.75" TextWrapping="Wrap"
+                           Text="用摄像头判断黑板左/右半边有没有被合上，并把结果交给自动化触发器。检测只区分“全部打开 / 左侧合上 / 右侧合上 / 全部合上”四种状态，允许有一定误差。" />
+            </StackPanel>
+
+            <Border BorderThickness="1"
+                    BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+                    CornerRadius="6"
+                    Padding="16">
+                <StackPanel Spacing="12">
+                    <TextBlock FontSize="16" FontWeight="SemiBold" Text="摄像头" />
+                    <CheckBox Content="启用黑板开合检测" IsChecked="{Binding IsEnabled, Mode=TwoWay}" />
+                    <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Column="0" Spacing="2">
+                            <TextBlock Text="摄像头序号（多摄像头时依次尝试 0、1、2……）" />
+                            <TextBox Width="120" HorizontalAlignment="Left" Text="{Binding CameraIndex}" />
+                        </StackPanel>
+                    </Grid>
+                    <ci:Field Label="取流后端">
+                        <ComboBox HorizontalAlignment="Left"
+                                  MinWidth="220"
+                                  ItemsSource="{x:Static models:BlackboardMonitorSettings.CaptureBackends}"
+                                  SelectedItem="{Binding CaptureBackend, Mode=TwoWay}" />
+                    </ci:Field>
+                    <Grid ColumnDefinitions="*,*">
+                        <ci:Field Grid.Column="0" Label="检测间隔（毫秒）" Margin="0 0 8 0">
+                            <TextBox Width="120" HorizontalAlignment="Left" Text="{Binding CaptureIntervalMs}" />
+                        </ci:Field>
+                        <ci:Field Grid.Column="1" Label="防抖帧数（连续多少帧一致才认可）">
+                            <TextBox Width="120" HorizontalAlignment="Left" Text="{Binding DebounceFrames}" />
+                        </ci:Field>
+                    </Grid>
+                    <Button x:Name="ReconnectButton" Content="重新连接摄像头" HorizontalAlignment="Left" />
+                </StackPanel>
+            </Border>
+
+            <Border BorderThickness="1"
+                    BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+                    CornerRadius="6"
+                    Padding="16">
+                <StackPanel Spacing="8">
+                    <TextBlock FontSize="16" FontWeight="SemiBold" Text="实时预览" />
+                    <TextBlock Opacity="0.75" TextWrapping="Wrap"
+                               Text="黄框是检测区域，白线是检测区域的中线，红框是判定出来的遮挡范围。打开本页面时会占用一次摄像头。" />
+                    <Border Background="#FF202020" CornerRadius="4" Height="260">
+                        <Image x:Name="PreviewImage" Stretch="Uniform" />
+                    </Border>
+                    <TextBlock x:Name="StateTextBlock" FontSize="15" Text="正在连接摄像头……" />
+                    <TextBlock x:Name="MetricsTextBlock" Opacity="0.7" TextWrapping="Wrap" />
+                    <TextBlock x:Name="ErrorTextBlock" Opacity="0.9" Foreground="#FFFF6B6B" TextWrapping="Wrap" IsVisible="False" />
+                </StackPanel>
+            </Border>
+
+            <Border BorderThickness="1"
+                    BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+                    CornerRadius="6"
+                    Padding="16">
+                <StackPanel Spacing="12">
+                    <TextBlock FontSize="16" FontWeight="SemiBold" Text="检测区域" />
+                    <TextBlock Opacity="0.75" TextWrapping="Wrap"
+                               Text="只统计这个矩形里的画面（0~1 为相对整帧的比例）。默认裁掉画面下方 35%，可以避开课桌、学生等深色物体。" />
+                    <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Column="0" Spacing="2">
+                            <TextBlock Text="左边界" />
+                            <Slider Minimum="0" Maximum="1" Value="{Binding RoiX}" />
+                        </StackPanel>
+                        <TextBlock Grid.Column="1" Width="48" VerticalAlignment="Center" TextAlignment="Right"
+                                   Text="{Binding RoiX, StringFormat={}{0:F2}}" />
+                    </Grid>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Column="0" Spacing="2">
+                            <TextBlock Text="上边界" />
+                            <Slider Minimum="0" Maximum="1" Value="{Binding RoiY}" />
+                        </StackPanel>
+                        <TextBlock Grid.Column="1" Width="48" VerticalAlignment="Center" TextAlignment="Right"
+                                   Text="{Binding RoiY, StringFormat={}{0:F2}}" />
+                    </Grid>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Column="0" Spacing="2">
+                            <TextBlock Text="宽度" />
+                            <Slider Minimum="0.05" Maximum="1" Value="{Binding RoiWidth}" />
+                        </StackPanel>
+                        <TextBlock Grid.Column="1" Width="48" VerticalAlignment="Center" TextAlignment="Right"
+                                   Text="{Binding RoiWidth, StringFormat={}{0:F2}}" />
+                    </Grid>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Column="0" Spacing="2">
+                            <TextBlock Text="高度" />
+                            <Slider Minimum="0.05" Maximum="1" Value="{Binding RoiHeight}" />
+                        </StackPanel>
+                        <TextBlock Grid.Column="1" Width="48" VerticalAlignment="Center" TextAlignment="Right"
+                                   Text="{Binding RoiHeight, StringFormat={}{0:F2}}" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <Border BorderThickness="1"
+                    BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+                    CornerRadius="6"
+                    Padding="16">
+                <StackPanel Spacing="12">
+                    <TextBlock FontSize="16" FontWeight="SemiBold" Text="判定阈值" />
+                    <TextBlock Opacity="0.75" TextWrapping="Wrap"
+                               Text="一般不需要调整。如果全部打开时被误判成有遮挡，先把“黑色阈值”调小；如果合上时识别不到，把“列黑像素占比”调小。" />
+                    <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Column="0" Spacing="2">
+                            <TextBlock Text="黑色阈值（灰度，0~255）" />
+                            <Slider Minimum="0" Maximum="120" Value="{Binding DarkThreshold}" />
+                        </StackPanel>
+                        <TextBlock Grid.Column="1" Width="48" VerticalAlignment="Center" TextAlignment="Right"
+                                   Text="{Binding DarkThreshold, StringFormat={}{0:F0}}" />
+                    </Grid>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Column="0" Spacing="2">
+                            <TextBlock Text="列黑像素占比（超过则视为该列被遮挡）" />
+                            <Slider Minimum="0.2" Maximum="0.9" Value="{Binding ColumnDarkRatio}" />
+                        </StackPanel>
+                        <TextBlock Grid.Column="1" Width="48" VerticalAlignment="Center" TextAlignment="Right"
+                                   Text="{Binding ColumnDarkRatio, StringFormat={}{0:F2}}" />
+                    </Grid>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Column="0" Spacing="2">
+                            <TextBlock Text="最小遮挡宽度（小于则视为全部打开）" />
+                            <Slider Minimum="0.005" Maximum="0.3" Value="{Binding MinRunWidth}" />
+                        </StackPanel>
+                        <TextBlock Grid.Column="1" Width="48" VerticalAlignment="Center" TextAlignment="Right"
+                                   Text="{Binding MinRunWidth, StringFormat={}{0:F3}}" />
+                    </Grid>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Column="0" Spacing="2">
+                            <TextBlock Text="全闭判定宽度（遮挡足够宽且居中时视为全部合上）" />
+                            <Slider Minimum="0.2" Maximum="1" Value="{Binding BothClosedRunWidth}" />
+                        </StackPanel>
+                        <TextBlock Grid.Column="1" Width="48" VerticalAlignment="Center" TextAlignment="Right"
+                                   Text="{Binding BothClosedRunWidth, StringFormat={}{0:F2}}" />
+                    </Grid>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Column="0" Spacing="2">
+                            <TextBlock Text="全闭判定居中容差" />
+                            <Slider Minimum="0" Maximum="0.3" Value="{Binding BothClosedCenterTolerance}" />
+                        </StackPanel>
+                        <TextBlock Grid.Column="1" Width="48" VerticalAlignment="Center" TextAlignment="Right"
+                                   Text="{Binding BothClosedCenterTolerance, StringFormat={}{0:F2}}" />
+                    </Grid>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Column="0" Spacing="2">
+                            <TextBlock Text="全闭判定总占比（遮挡列占比超过此值时也视为全部合上）" />
+                            <Slider Minimum="0.5" Maximum="1" Value="{Binding BothClosedCoverage}" />
+                        </StackPanel>
+                        <TextBlock Grid.Column="1" Width="48" VerticalAlignment="Center" TextAlignment="Right"
+                                   Text="{Binding BothClosedCoverage, StringFormat={}{0:F2}}" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <Button x:Name="RestoreDefaultsButton" Content="恢复默认设置" />
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</ci:SettingsPageBase>

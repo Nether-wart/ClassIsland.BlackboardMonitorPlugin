@@ -1,0 +1,12 @@
+id: classisland.blackboard-monitor
+name: 黑板开合监视
+description: 通过摄像头检测黑板左/右半边的开合状态，并注册自动化触发器，让用户自定义后续行动。
+entranceAssembly: "ClassIsland.BlackboardMonitorPlugin.dll"
+url: https://github.com/ClassIsland/ClassIsland
+apiVersion: 2.0.0.0
+version: 1.0.0.0
+author: ClassIsland
+icon: icon.png
+readme: README.md
+supportedOSPlatforms:
+  - Windows

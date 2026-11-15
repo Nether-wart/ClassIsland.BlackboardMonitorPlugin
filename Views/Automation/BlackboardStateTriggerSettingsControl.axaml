@@ -1,0 +1,24 @@
+<ci:TriggerSettingsControlBase
+    x:Class="ClassIsland.BlackboardMonitorPlugin.Views.Automation.BlackboardStateTriggerSettingsControl"
+    x:TypeArguments="automation:BlackboardStateTriggerSettings"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ci="http://classisland.tech/schemas/xaml/core"
+    xmlns:automation="clr-namespace:ClassIsland.BlackboardMonitorPlugin.Automation">
+    <StackPanel Margin="0 8 0 0" Spacing="8">
+        <ci:Field Label="当黑板状态变为">
+            <ComboBox x:Name="TargetStateComboBox" HorizontalAlignment="Stretch">
+                <ComboBoxItem Content="全部打开（无遮挡）" />
+                <ComboBoxItem Content="左侧合上" />
+                <ComboBoxItem Content="右侧合上" />
+                <ComboBoxItem Content="全部合上" />
+            </ComboBox>
+        </ci:Field>
+        <CheckBox x:Name="TriggerOnLeaveCheckBox" Content="离开该状态时触发工作流的恢复" />
+        <CheckBox x:Name="TriggerOnInitialCheckBox" Content="插件启动时若已处于该状态，也触发一次" />
+        <TextBlock x:Name="StatusTextBlock"
+                   Opacity="0.7"
+                   TextWrapping="Wrap"
+                   Text="正在读取黑板状态……" />
+    </StackPanel>
+</ci:TriggerSettingsControlBase>
